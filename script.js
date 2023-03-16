@@ -15349,7 +15349,7 @@ const guessGrid = document.querySelector("[data-guess-grid]");
 function pressKey(key) {
     const activeTiles = getActiveTiles();
     if (activeTiles.length >= WORD_LENGTH) return;
-    const key = keyboard.querySelector(`[data-key="${letter}"i]`)
+    const nextTile = guessGrid.querySelector(":not([data-letter])");
     nextTile.dataset.letter = key.toLowerCase();
     nextTile.textContent = key;
     nextTile.dataset.state = "active";
@@ -15436,7 +15436,7 @@ function checkStatus(guess, tiles) {
     const remainingTiles = guessGrid.querySelectorAll(":not([data-letter])");
     if (remainingTiles.length === 0) {
         showAlert(
-            `You Lose! The Correct Word is ${targetWord.toUpperCase()}`,
+            `You Lose!The Correct Word is ${targetWord.toUpperCase()}`,
             null
         );
         stopInteraction();
