@@ -15348,7 +15348,7 @@ const guessGrid = document.querySelector("[data-guess-grid]");
 function pressKey(key) {
     const activeTiles = getActiveTiles();
     if (activeTiles.length >= WORD_LENGTH) return;
-    const nextTile = guessGrid.querySelector(":not([data-letter])");
+    const key = keyboard.querySelector(`[data-key="${letter}"i]`)
     nextTile.dataset.letter = key.toLowerCase();
     nextTile.textContent = key;
     nextTile.dataset.state = "active";
