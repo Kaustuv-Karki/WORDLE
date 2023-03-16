@@ -15325,7 +15325,6 @@ function handleMouseClick(e) {
 }
 
 function handleKeyPress(e) {
-    console.log(e);
     if (e.key == "Enter") {
         submitGuess();
         return;
@@ -15367,8 +15366,53 @@ function submitGuess() {
         shakeTiles(activeTiles);
         return;
     }
+
+    const guess = activeTiles.reduce((word, tile) => {
+        return word + tile.dataset.letter;
+    }, "");
+    console.log(guess);
+
+    if (!dictionary.includes(guess)) {
+        showAlert("Word not in List!");
+        shakeTiles(activeTiles);
+        return;
+    }
+
+    stopInteraction();
+    activeTiles.forEach((...params) => flipTiles(...params, guess));
 }
 
 function getActiveTiles() {
     return guessGrid.querySelectorAll('[data-state="active"]');
+}
+
+const alertContainer = document.querySelector("[data-alert-container]");
+
+const showAlert = (message, duration = 1000) => {
+    const alert = document.createElement("div");
+    alert.textContent = message;
+    alert.classList.add("alert");
+    alertContainer.prepend(alert);
+
+    if (duration == null) return;
+
+    setTimeout(() => {
+        alert.classList.add("hide");
+        alert.addEventListener("transitionend", () => {
+            alert.remove();
+        });
+    }, duration);
+};
+
+function shakeTiles(tiles) {
+    tiles.forEach((tile) => {
+        tile.classList.add("shake");
+        tile.addEventListener(
+            "animationend",
+            () => {
+                tile.classList.remove("shake");
+            },
+            { once: true }
+        );
+    });
 }

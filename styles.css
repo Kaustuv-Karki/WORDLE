@@ -145,3 +145,26 @@ body {
 .alert.hide {
     opacity: 0;
 }
+
+
+.tile.shake {
+    animation: shake 200ms ease-in-out;
+}
+
+@keyframes shake {
+    0% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-5%);
+    }
+
+    75% {
+        transform: translateX(5%);
+    }
+
+    100% {
+        transform: translateX(0);
+    }
+}
