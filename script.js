@@ -1,11 +1,3 @@
-fetch("dictionary.json")
-    .then((response) => response.json())
-    .then((data) => {
-        // do something with the JSON data
-        console.log(data);
-    })
-    .catch((error) => console.error(error));
-
 const tagetWords = [
     "cigar",
     "rebut",
@@ -15299,11 +15291,19 @@ const dictionary = [
     "shave",
 ];
 
+const WORD_LENGTH = 5;
+
 function startInteraction() {
     document.addEventListener("click", handleMouseClick);
-    document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("keydown", handleKeyPress);
 }
 
+function stopInteraction() {
+    document.removeEventListener("click", handleMouseClick);
+    document.removeEventListener("keydown", handleKeyPress);
+}
+
+startInteraction();
 function handleMouseClick(e) {
     if (e.target.matches["[data-key"]) {
         pressKey(e.target.dataset.key);
@@ -15317,4 +15317,44 @@ function handleMouseClick(e) {
         deleteKey();
         return;
     }
+}
+
+function handleKeyPress(e) {
+    console.log(e);
+    if (e.key == "Enter") {
+        submitGuess();
+        return;
+    }
+    if (e.key == "Backspace" || e.key == "Delete") {
+        deleteKey();
+        return;
+    }
+    if (e.key.match(/^[a-z]$/)) {
+        pressKey(e.key);
+        return;
+    }
+}
+
+const guessGrid = document.querySelector("[data-guess-grid]");
+
+function pressKey(key) {
+    const activeTiles = getActiveTiles();
+    if (activeTiles.length >= WORD_LENGTH) return;
+    const nextTile = guessGrid.querySelector(":not([data-letter])");
+    nextTile.dataset.letter = key.toLowerCase();
+    nextTile.textContent = key;
+    nextTile.dataset.state = "active";
+}
+
+function deleteKey() {
+    const activeTiles = getActiveTiles();
+    if (activeTiles.length == 0) return;
+    const lastTile = activeTiles[activeTiles.length - 1];
+    lastTile.textContent = "";
+    delete lastTile.dataset.state;
+    delete lastTile.dataset.letter;
+}
+
+function getActiveTiles() {
+    return guessGrid.querySelectorAll('[data-state="active"]');
 }
