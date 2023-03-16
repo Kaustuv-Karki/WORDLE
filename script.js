@@ -1,4 +1,4 @@
-const tagetWords = [
+const targetWords = [
     "cigar",
     "rebut",
     "sissy",
@@ -15293,6 +15293,11 @@ const dictionary = [
 
 const WORD_LENGTH = 5;
 
+const startDate = new Date(2023, 1, 1);
+const offset = Date.now() - startDate;
+const dayOffset = offset / (1000 * 60 * 60 * 24);
+const targetWord = targetWords[Math.floor(dayOffset)];
+
 function startInteraction() {
     document.addEventListener("click", handleMouseClick);
     document.addEventListener("keydown", handleKeyPress);
@@ -15353,6 +15358,15 @@ function deleteKey() {
     lastTile.textContent = "";
     delete lastTile.dataset.state;
     delete lastTile.dataset.letter;
+}
+
+function submitGuess() {
+    const activeTiles = [...getActiveTiles()];
+    if (activeTiles.length !== WORD_LENGTH) {
+        showAlert("Not enough letters!");
+        shakeTiles(activeTiles);
+        return;
+    }
 }
 
 function getActiveTiles() {
