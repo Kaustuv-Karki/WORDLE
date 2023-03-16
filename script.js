@@ -15297,7 +15297,11 @@ const startDate = new Date(2023, 1, 1);
 const offset = Date.now() - startDate;
 const dayOffset = offset / (1000 * 60 * 60 * 24);
 const targetWord = targetWords[Math.floor(dayOffset)];
+const keyboard = document.querySelector("[data-keyboard]");
 
+const flipAnimationDuration = 500;
+
+console.log(targetWord);
 function startInteraction() {
     document.addEventListener("click", handleMouseClick);
     document.addEventListener("keydown", handleKeyPress);
@@ -15310,15 +15314,15 @@ function stopInteraction() {
 
 startInteraction();
 function handleMouseClick(e) {
-    if (e.target.matches["[data-key"]) {
+    if (e.target.matches("[data-key]")) {
         pressKey(e.target.dataset.key);
         return;
     }
-    if (e.target.matches("[data-enter")) {
+    if (e.target.matches("[data-enter]")) {
         submitGuess();
         return;
     }
-    if (e.target.matches("[data-delete")) {
+    if (e.target.matches("[data-delete]")) {
         deleteKey();
         return;
     }
@@ -15379,7 +15383,30 @@ function submitGuess() {
     }
 
     stopInteraction();
-    activeTiles.forEach((...params) => flipTiles(...params, guess));
+    activeTiles.forEach((...params) => flipTile(...params, guess));
+}
+
+function flipTile(tile, index, array, guess) {
+    const letter = tile.dataset.letter;
+    const key = keyboard.querySelector(`[data-key="${letter}"]`);
+    console.log(key);
+    setTimeout(() => {
+        tile.classList.add("flip");
+    }, (index * flipAnimationDuration) / 2);
+
+    tile.addEventListener("transitionend", () => {
+        tile.classList.remove("flip");
+        if (targetWord[index] === letter) {
+            tile.dataset.state = "correct";
+            key.classList.add("correct");
+        } else if (targetWord.includes(letter)) {
+            tile.dataset.state = "wrong-location";
+            key.classList.add("wrong-location");
+        } else {
+            tile.dataset.state = "wrong";
+            key.classList.add("wrong");
+        }
+    });
 }
 
 function getActiveTiles() {
@@ -15388,7 +15415,7 @@ function getActiveTiles() {
 
 const alertContainer = document.querySelector("[data-alert-container]");
 
-const showAlert = (message, duration = 1000) => {
+function showAlert(message, duration = 1000) {
     const alert = document.createElement("div");
     alert.textContent = message;
     alert.classList.add("alert");
@@ -15402,7 +15429,7 @@ const showAlert = (message, duration = 1000) => {
             alert.remove();
         });
     }, duration);
-};
+}
 
 function shakeTiles(tiles) {
     tiles.forEach((tile) => {
