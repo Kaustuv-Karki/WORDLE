@@ -15300,6 +15300,7 @@ const targetWord = targetWords[Math.floor(dayOffset)];
 const keyboard = document.querySelector("[data-keyboard]");
 
 const flipAnimationDuration = 500;
+const danceAnimation = 500;
 
 console.log(targetWord);
 function startInteraction() {
@@ -15388,25 +15389,58 @@ function submitGuess() {
 
 function flipTile(tile, index, array, guess) {
     const letter = tile.dataset.letter;
-    const key = keyboard.querySelector(`[data-key="${letter}"]`);
+    const key = keyboard.querySelector(`[data-key="${letter}"i]`);
     console.log(key);
     setTimeout(() => {
         tile.classList.add("flip");
     }, (index * flipAnimationDuration) / 2);
 
-    tile.addEventListener("transitionend", () => {
-        tile.classList.remove("flip");
-        if (targetWord[index] === letter) {
-            tile.dataset.state = "correct";
-            key.classList.add("correct");
-        } else if (targetWord.includes(letter)) {
-            tile.dataset.state = "wrong-location";
-            key.classList.add("wrong-location");
-        } else {
-            tile.dataset.state = "wrong";
-            key.classList.add("wrong");
-        }
-    });
+    tile.addEventListener(
+        "transitionend",
+        () => {
+            tile.classList.remove("flip");
+            if (targetWord[index] === letter) {
+                tile.dataset.state = "correct";
+                key.classList.add("correct");
+            } else if (targetWord.includes(letter)) {
+                tile.dataset.state = "wrong-location";
+                key.classList.add("wrong-location");
+            } else {
+                tile.dataset.state = "wrong";
+                key.classList.add("wrong");
+            }
+
+            if (index === array.length - 1) {
+                tile.addEventListener(
+                    "transitionend",
+                    () => {
+                        startInteraction();
+                        checkStatus(guess, array);
+                    },
+                    { once: true }
+                );
+            }
+        },
+        { once: true }
+    );
+}
+
+function checkStatus(guess, tiles) {
+    if (guess === targetWord) {
+        showAlert("You Win!", 5000);
+        danceTiles(tiles);
+        stopInteraction();
+        return;
+    }
+
+    const remainingTiles = guessGrid.querySelectorAll(":not([data-letter])");
+    if (remainingTiles.length === 0) {
+        showAlert(
+            `You Lose! The Correct Word is ${targetWord.toUpperCase()}`,
+            null
+        );
+        stopInteraction();
+    }
 }
 
 function getActiveTiles() {
@@ -15441,5 +15475,20 @@ function shakeTiles(tiles) {
             },
             { once: true }
         );
+    });
+}
+
+function danceTiles(tiles) {
+    tiles.forEach((tile, index) => {
+        setTimeout(() => {
+            tile.classList.add("dance");
+            tile.addEventListener(
+                "animationend",
+                () => {
+                    tile.classList.remove("dance");
+                },
+                { once: true }
+            );
+        }, (index * danceAnimation) / 5);
     });
 }
